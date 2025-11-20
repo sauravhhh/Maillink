@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mailto Link Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            flex-grow: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: #f9f9f9;
+            transition: border-color 0.2s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4361ee;
+            background-color: #fff;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            background-color: #FFC107;
+            color: #333;
+            border: none;
+            padding: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn:hover {
+            background-color: #FFB300;
+        }
+        
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            display: none;
+        }
+        
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #444;
+        }
+        
+        .result-link {
+            padding: 12px;
+            background-color: #fff;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+            word-break: break-all;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+        
+        .copy-btn {
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .copy-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .copy-btn.copied {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #45a049;
+        }
+        
+        .test-btn {
+            background-color: #4361ee;
+            color: white;
+            border: 1px solid #3a56d4;
+        }
+        
+        .test-btn:hover {
+            background-color: #3a56d4;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .button-group .btn {
+            flex: 1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .advanced-section {
+            margin-top: 15px;
+        }
+        
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #4361ee;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 0;
+        }
+        
+        .toggle-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .toggle-content {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .toggle-content.show {
+            display: block;
+        }
+        
+        .toggle-icon {
+            transition: transform 0.3s;
+        }
+        
+        .toggle-icon.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mailto Link Generator</h1>
+            <p class="subtitle">Create mailto links with subject, body, bcc and cc.</p>
+        </header>
+
+        <div class="form-group">
+            <label for="to">To</label>
+            <input type="email" id="to" placeholder="recipient@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="subject">Subject</label>
+            <input type="text" id="subject" placeholder="Email subject">
+        </div>
+
+        <div class="form-group">
+            <label for="body">Body</label>
+            <textarea id="body" placeholder="Email body content"></textarea>
+        </div>
+
+        <div class="advanced-section">
+            <button class="toggle-btn" id="toggleAdvanced">
+                <span class="toggle-icon" id="toggleIcon">▼</span> Advanced Options
+            </button>
+            <div class="toggle-content" id="advancedContent">
+                <div class="form-group">
+                    <label for="cc">Cc</label>
+                    <input type="text" id="cc" placeholder="cc@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="bcc">Bcc</label>
+                    <input type="text" id="bcc" placeholder="bcc@example.com">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" id="generateBtn">Generate</button>
+
+        <div class="result-container" id="resultContainer">
+            <div class="result-label">Result</div>
+            <div class="result-link" id="resultLink"></div>
+            <div class="button-group">
+                <button class="btn copy-btn" id="copyBtn">Copy</button>
+                <button class="btn test-btn" id="testBtn" disabled>Test Link</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Made with ❤️ by Sauravhhh
+    </footer>
+
+    <script>
+        // Function to generate mailto link
+        function generateMailtoLink() {
+            const toInput = document.getElementById('to');
+            const ccInput = document.getElementById('cc');
+            const bccInput = document.getElementById('bcc');
+            const subjectInput = document.getElementById('subject');
+            const bodyInput = document.getElementById('body');
+            const resultContainer = document.getElementById('resultContainer');
+            const resultLink = document.getElementById('resultLink');
+            const testBtn = document.getElementById('testBtn');
+            
+            let mailtoLink = 'mailto:';
+            
+            if (toInput.value) {
+                mailtoLink += encodeURIComponent(toInput.value);
+            }
+            
+            let params = [];
+            
+            if (subjectInput.value) {
+                params.push('subject=' + encodeURIComponent(subjectInput.value));
+            }
+            
+            if (bodyInput.value) {
+                params.push('body=' + encodeURIComponent(bodyInput.value));
+            }
+            
+            if (ccInput.value) {
+                params.push('cc=' + encodeURIComponent(ccInput.value));
+            }
+            
+            if (bccInput.value) {
+                params.push('bcc=' + encodeURIComponent(bccInput.value));
+            }
+            
+            if (params.length > 0) {
+                mailtoLink += '?' + params.join('&');
+            }
+            
+            resultLink.textContent = mailtoLink;
+            testBtn.disabled = false;
+            resultContainer.style.display = 'block';
+        }
+
+        // Function to copy to clipboard
+        function copyToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Change copy button to copied state
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.classList.add('copied');
+            copyBtn.textContent = 'Copied';
+            
+            // Reset button after 2 seconds
+            setTimeout(function() {
+                copyBtn.classList.remove('copied');
+                copyBtn.textContent = 'Copy';
+            }, 2000);
+        }
+
+        // Function to test mailto link
+        function testMailtoLink() {
+            const resultLink = document.getElementById('resultLink');
+            const mailtoLink = resultLink.textContent;
+            if (mailtoLink) {
+                // Create a temporary link element to ensure proper mailto link handling
+                const tempLink = document.createElement('a');
+                tempLink.href = mailtoLink;
+                tempLink.target = '_blank';
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+            }
+        }
+
+        // Initialize event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            const generateBtn = document.getElementById('generateBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const testBtn = document.getElementById('testBtn');
+            const toggleAdvanced = document.getElementById('toggleAdvanced');
+            const advancedContent = document.getElementById('advancedContent');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            // Toggle advanced options
+            toggleAdvanced.addEventListener('click', function() {
+                advancedContent.classList.toggle('show');
+                toggleIcon.classList.toggle('rotate');
+            });
+
+            // Generate button click event
+            generateBtn.addEventListener('click', generateMailtoLink);
+
+            // Copy button click event
+            copyBtn.addEventListener('click', function() {
+                const resultLink = document.getElementById('resultLink');
+                copyToClipboard(resultLink.textContent);
+            });
+
+            // Test button click event
+            testBtn.addEventListener('click', testMailtoLink);
+        });
+    </script>
+</body>
+  </html>
